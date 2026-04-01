@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -14,6 +15,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          ElevatedButton(onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          }, child: Text('Back'))
+        ],
+        automaticallyImplyLeading: false,
         title: Text("My Calendar"),
         backgroundColor: Colors.black,
       ),
