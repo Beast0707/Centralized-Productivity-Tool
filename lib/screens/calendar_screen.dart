@@ -25,7 +25,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             lastDay: DateTime.utc(2100, 12, 31),
 
             headerStyle: HeaderStyle(
-              formatButtonVisible: false,
+              formatButtonVisible: true,
             ),
 
             selectedDayPredicate: (day) {
