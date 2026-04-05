@@ -2,11 +2,11 @@ class Event {
   int? id;
   String? title;
   DateTime? date;
-  DateTime? createdat;
-  DateTime? updatedat;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
   // Constructor
-  Event({this.id, this.title, this.date, this.createdat, this.updatedat});
+  Event({this.id, this.title, this.date, this.createdAt, this.updatedAt});
 
   // Object → Map (for DB insert)
   Map<String, dynamic> toMap() {
@@ -14,8 +14,8 @@ class Event {
       "id": id,
       "title": title,
       "date": date?.toIso8601String(),
-      "createdat": createdat?.toIso8601String(),
-      "updatedat": updatedat?.toIso8601String(),
+      "created_at": createdAt?.toIso8601String(),
+      "updated_at": updatedAt?.toIso8601String(),
     };
   }
 
@@ -25,12 +25,18 @@ class Event {
       id: map["id"],
       title: map["title"],
       date: map["date"] != null ? DateTime.parse(map["date"]) : null,
-      createdat: map["createdat"] != null
-          ? DateTime.parse(map["createdat"])
+      createdAt: map["created_at"] != null
+          ? DateTime.parse(map["created_at"])
           : null,
-      updatedat: map["updatedat"] != null
-          ? DateTime.parse(map["updatedat"])
+      updatedAt: map["updated_at"] != null
+          ? DateTime.parse(map["updated_at"])
           : null,
     );
   }
+
+  @override
+  String toString() {
+    return 'Event(id: $id, title: $title, date: $date)';
+  }
+
 }
