@@ -1,7 +1,7 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import '../widgets/sidebar.dart';
 import 'calendar_screen.dart';
+import '../widgets/sidebar.dart';
 import '../services/db_service.dart';
 import '../models/task_model.dart';
 import '../models/note_model.dart';
@@ -18,41 +18,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // Controller to handle the search input text
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<Task> tasks = [];
-
-  @override
-  void initState() {
-    super.initState();
-    loadTasks();
-  }
-
-  Future<void> loadTasks() async {
-    debugPrint("📥 Loading tasks...");
-    final data = await DBService.instance.getTasksByDate(DateTime.now());
-
-    debugPrint("📊 Loaded Tasks: $data");
-
-    setState(() {
-      tasks = data;
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  // =======================
-  // 🔴 TASKS (WITH LOGS)
-  // =======================
-
+  //test cases remove
+  //TASK
   Future<void> insertTestTask() async {
-    debugPrint("🟡 Inserting Task...");
-
     Task task = Task(
       title: "test task2",
       description: "test task2",
@@ -63,165 +35,156 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     int id = await DBService.instance.insertTask(task);
-
-    debugPrint("✅ Inserted Task ID: $id");
-
-    loadTasks();
+    print("Inserted Task ID: $id");
   }
 
   Future<void> testToggleTask() async {
-    final data = await DBService.instance.getTasksByDate(DateTime.now());
+    final tasks = await DBService.instance.getTasksByDate(DateTime.now());
 
-    if (data.isEmpty) {
-      debugPrint("❌ No tasks to toggle");
+    if (tasks.isEmpty) {
+      print("No tasks found to toggle");
       return;
     }
 
-    debugPrint("🔄 Before Toggle: ${data.first.isCompleted}");
+    Task task = tasks.first;
 
-    await DBService.instance.toggleTaskCompletion(data.first);
+    print("Before Toggle: ${task.isCompleted}");
 
-    final updated =
+    await DBService.instance.toggleTaskCompletion(task);
+
+    final updatedTasks =
     await DBService.instance.getTasksByDate(DateTime.now());
 
-    debugPrint("✅ After Toggle: ${updated.first.isCompleted}");
+    print("After Toggle: ${updatedTasks.first.isCompleted}");
+  }
 
-    loadTasks();
+  Future<void> testGetTasksByDate() async {
+    final tasks =
+    await DBService.instance.getTasksByDate(DateTime.now());
+
+    if (tasks.isEmpty) {
+      print("No tasks found for today");
+    } else {
+      print("Tasks for today: $tasks");
+    }
   }
 
   Future<void> testUpdateTask() async {
-    final data = await DBService.instance.getTasksByDate(DateTime.now());
+    final tasks = await DBService.instance.getTasksByDate(DateTime.now());
 
-    if (data.isEmpty) {
-      debugPrint("❌ No tasks to update");
+    if (tasks.isEmpty) {
+      print("No tasks found to update");
       return;
     }
 
-    Task task = data.first;
+    Task task = tasks.first;
 
-    debugPrint("📝 Before Update: ${task.title}");
-
-    task.title = "UPDATED TITLE";
+    task.title = "UPDATED TITLE ";
     task.description = "UPDATED DESC";
     task.updatedAt = DateTime.now();
 
     await DBService.instance.updateTask(task);
 
-    final updated =
+    final updatedTasks =
     await DBService.instance.getTasksByDate(DateTime.now());
 
-    debugPrint("✅ After Update: ${updated.first}");
-
-    loadTasks();
+    print("Updated Task: ${updatedTasks.first}");
   }
 
   Future<void> testDeleteTask() async {
-    final data = await DBService.instance.getTasksByDate(DateTime.now());
+    final tasks = await DBService.instance.getTasksByDate(DateTime.now());
 
-    if (data.isEmpty) {
-      debugPrint("❌ No tasks to delete");
+    if (tasks.isEmpty) {
+      print("No tasks to delete");
       return;
     }
 
-    debugPrint("🗑️ Deleting Task ID: ${data.first.id}");
+    Task task = tasks.first;
 
-    await DBService.instance.deleteTask(data.first.id!);
+    print("Deleting Task ID: ${task.id}");
 
-    final updated =
+    await DBService.instance.deleteTask(task.id!);
+
+    final updatedTasks =
     await DBService.instance.getTasksByDate(DateTime.now());
 
-    debugPrint("✅ Remaining Tasks: $updated");
-
-    loadTasks();
+    print("Remaining Tasks: $updatedTasks");
   }
 
-  // =======================
-  // 📝 NOTES (WITH LOGS)
-  // =======================
-
+  //NOTES
   Future<void> testInsertNote() async {
-    debugPrint("🟡 Inserting Note...");
-
-    int id = await DBService.instance.insertNote(
-      Note(
-        title: "Test Note",
-        content: "This is a test note",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      ),
+    Note note = Note(
+      title: "Test Note",
+      content: "This is a test note",
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
 
-    debugPrint("✅ Inserted Note ID: $id");
+    int id = await DBService.instance.insertNote(note);
+    print("Inserted Note ID: $id");
   }
 
   Future<void> testGetNotes() async {
-    debugPrint("📥 Fetching Notes...");
     final notes = await DBService.instance.getAllNotes();
-    debugPrint("📊 Notes: $notes");
+    print("Notes: $notes");
   }
 
   Future<void> testUpdateNote() async {
     final notes = await DBService.instance.getAllNotes();
 
     if (notes.isEmpty) {
-      debugPrint("❌ No notes to update");
+      print("No notes to update");
       return;
     }
 
     Note note = notes.first;
 
-    debugPrint("📝 Before Update: ${note.title}");
-
-    note.title = "UPDATED NOTE";
+    note.title = "UPDATED NOTE ";
     note.content = "UPDATED CONTENT";
     note.updatedAt = DateTime.now();
 
     await DBService.instance.updateNote(note);
 
-    debugPrint("✅ Note Updated");
+    final updated = await DBService.instance.getAllNotes();
+    print("Updated Notes: $updated");
   }
 
   Future<void> testDeleteNote() async {
     final notes = await DBService.instance.getAllNotes();
 
     if (notes.isEmpty) {
-      debugPrint("❌ No notes to delete");
+      print("No notes to delete");
       return;
     }
 
-    debugPrint("🗑️ Deleting Note ID: ${notes.first.id}");
+    Note note = notes.first;
 
-    await DBService.instance.deleteNote(notes.first.id!);
+    print("Deleting Note ID: ${note.id}");
 
-    debugPrint("✅ Note Deleted");
+    await DBService.instance.deleteNote(note.id!);
+
+    final updated = await DBService.instance.getAllNotes();
+    print("Remaining Notes: $updated");
   }
 
-  // =======================
-  // 📅 EVENTS (WITH LOGS)
-  // =======================
-
+  //Events
   Future<void> testInsertEvent() async {
-    debugPrint("🟡 Inserting Event...");
-
-    int id = await DBService.instance.insertEvent(
-      Event(
-        title: "Test Event",
-        date: DateTime.now(),
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      ),
+    Event event = Event(
+      title: "Test Event2",
+      date: DateTime.now(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
 
-    debugPrint("✅ Inserted Event ID: $id");
+    int id = await DBService.instance.insertEvent(event);
+    print("Inserted Event ID: $id");
   }
 
   Future<void> testGetEvents() async {
-    debugPrint("📥 Fetching Events...");
-
     final events =
     await DBService.instance.getEventsByDate(DateTime.now());
 
-    debugPrint("📊 Events: $events");
+    print("Events: $events");
   }
 
   Future<void> testUpdateEvent() async {
@@ -229,20 +192,21 @@ class _HomeScreenState extends State<HomeScreen> {
     await DBService.instance.getEventsByDate(DateTime.now());
 
     if (events.isEmpty) {
-      debugPrint("❌ No events to update");
+      print("No events to update");
       return;
     }
 
     Event event = events.first;
 
-    debugPrint("📝 Before Update: ${event.title}");
-
-    event.title = "UPDATED EVENT";
+    event.title = "UPDATED EVENT ";
     event.updatedAt = DateTime.now();
 
     await DBService.instance.updateEvent(event);
 
-    debugPrint("✅ Event Updated");
+    final updated =
+    await DBService.instance.getEventsByDate(DateTime.now());
+
+    print("Updated Events: $updated");
   }
 
   Future<void> testDeleteEvent() async {
@@ -250,18 +214,27 @@ class _HomeScreenState extends State<HomeScreen> {
     await DBService.instance.getEventsByDate(DateTime.now());
 
     if (events.isEmpty) {
-      debugPrint("❌ No events to delete");
+      print("No events to delete");
       return;
     }
 
-    debugPrint("🗑️ Deleting Event ID: ${events.first.id}");
+    Event event = events.first;
 
-    await DBService.instance.deleteEvent(events.first.id!);
+    print("Deleting Event ID: ${event.id}");
 
-    debugPrint("✅ Event Deleted");
+    await DBService.instance.deleteEvent(event.id!);
+
+    final updated =
+    await DBService.instance.getEventsByDate(DateTime.now());
+
+    print("Remaining Events: $updated");
   }
 
-  // =======================
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -271,17 +244,18 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: const AppSidebar(currentRoute: '/home'),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTopBar(context),
+
               const SizedBox(height: 20),
 
-              const Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Text(
-                  'Recent Tasks',
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: const Text(
+                  'Recent notes',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
@@ -290,77 +264,93 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              const SizedBox(height: 10),
-
-              // TASK LIST UI
-              Expanded(
-                child: tasks.isEmpty
-                    ? const Center(child: Text("No tasks yet"))
-                    : ListView.builder(
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    final task = tasks[index];
-
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        title: Text(task.title),
-                        subtitle: Text(task.description ?? ""),
-                        trailing: Checkbox(
-                          value: task.isCompleted == 1,
-                          onChanged: (_) async {
-                            debugPrint(
-                                "🔄 UI Toggle Task ID: ${task.id}");
-
-                            await DBService.instance
-                                .toggleTaskCompletion(task);
-
-                            loadTasks();
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              // 🔴 TEMP BUTTON (REMOVE LATER)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CalendarScreen(),
+                    ),
+                  );
+                },
+                child: const Text("TEMP: Go to Calendar"),
               ),
 
-              // 🔧 DEV PANEL
-              ExpansionTile(
-                title: const Text("⚙️ Developer Test Panel"),
-                children: [
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      ElevatedButton(onPressed: insertTestTask, child: Text("Add Task")),
-                      ElevatedButton(onPressed: testToggleTask, child: Text("Toggle Task")),
-                      ElevatedButton(onPressed: testUpdateTask, child: Text("Update Task")),
-                      ElevatedButton(onPressed: testDeleteTask, child: Text("Delete Task")),
+              //TASKS
+              ElevatedButton(
+                onPressed: () {
+                  insertTestTask();
+                },
+                child: const Text("TEMP: Insert Task"),
+              ),
 
-                      ElevatedButton(onPressed: testInsertNote, child: Text("Add Note")),
-                      ElevatedButton(onPressed: testGetNotes, child: Text("Get Notes")),
-                      ElevatedButton(onPressed: testUpdateNote, child: Text("Update Note")),
-                      ElevatedButton(onPressed: testDeleteNote, child: Text("Delete Note")),
+              ElevatedButton(
+                onPressed: () => testGetTasksByDate(),
+                child: const Text("TEST: Get Tasks By Date"),
+              ),
 
-                      ElevatedButton(onPressed: testInsertEvent, child: Text("Add Event")),
-                      ElevatedButton(onPressed: testGetEvents, child: Text("Get Events")),
-                      ElevatedButton(onPressed: testUpdateEvent, child: Text("Update Event")),
-                      ElevatedButton(onPressed: testDeleteEvent, child: Text("Delete Event")),
+              ElevatedButton(
+                onPressed: () {
+                  testToggleTask();
+                },
+                child: const Text("TEST: Toggle Task"),
+              ),
 
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => CalendarScreen()),
-                          );
-                        },
-                        child: Text("Go Calendar"),
-                      ),
-                    ],
-                  ),
-                ],
+              ElevatedButton(
+                onPressed: () {
+                  testUpdateTask();
+                },
+                child: const Text("TEST: Update Task"),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  testDeleteTask();
+                },
+                child: const Text("TEST: Delete Task"),
+              ),
+
+              //NOTES
+              ElevatedButton(
+                onPressed: () => testInsertNote(),
+                child: const Text("TEST: Insert Note"),
+              ),
+
+              ElevatedButton(
+                onPressed: () => testGetNotes(),
+                child: const Text("TEST: Get Notes"),
+              ),
+
+              ElevatedButton(
+                onPressed: () => testUpdateNote(),
+                child: const Text("TEST: Update Note"),
+              ),
+
+              ElevatedButton(
+                onPressed: () => testDeleteNote(),
+                child: const Text("TEST: Delete Note"),
+              ),
+
+              //EVENTS
+              ElevatedButton(
+                onPressed: () => testInsertEvent(),
+                child: const Text("TEST: Insert Event"),
+              ),
+
+              ElevatedButton(
+                onPressed: () => testGetEvents(),
+                child: const Text("TEST: Get Events"),
+              ),
+
+              ElevatedButton(
+                onPressed: () => testUpdateEvent(),
+                child: const Text("TEST: Update Event"),
+              ),
+
+              ElevatedButton(
+                onPressed: () => testDeleteEvent(),
+                child: const Text("TEST: Delete Event"),
               ),
             ],
           ),
@@ -372,12 +362,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTopBar(BuildContext context) {
     return Row(
       children: [
+        // Sidebar Button — now opens the drawer
         IconButton(
           icon: const Icon(Icons.grid_view_rounded, size: 28, color: _kTextSub),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
+
         const SizedBox(width: 8),
 
+        // Functional Dummy Search Bar
         Expanded(
           child: Container(
             height: 48,
@@ -388,27 +381,38 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: TextField(
               controller: _searchController,
+              cursorColor: _kTextSub,
+              style: const TextStyle(color: Colors.black87, fontSize: 16),
               decoration: InputDecoration(
                 hintText: 'Search',
-                prefixIcon: const Icon(Icons.search, color: _kTextSub),
+                hintStyle: const TextStyle(color: _kTextSub, fontSize: 16),
+                prefixIcon: const Icon(Icons.search, color: _kTextSub, size: 22),
                 border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                // Added a clear button that appears when text is typed
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () =>
-                      setState(() => _searchController.clear()),
+                  icon: const Icon(Icons.clear, size: 18, color: _kTextSub),
+                  onPressed: () => setState(() => _searchController.clear()),
                 )
                     : null,
               ),
-              onChanged: (_) => setState(() {}),
+              onChanged: (value) {
+                // Refresh UI to show/hide the clear icon
+                setState(() {});
+                debugPrint("Searching for: $value");
+              },
             ),
           ),
         ),
 
         const SizedBox(width: 8),
 
+        // Three Dots Menu
         PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert_rounded, size: 28, color: _kTextSub),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          onSelected: (value) => debugPrint("Selected: $value"),
           itemBuilder: (context) => [
             _buildMenuItem('share', Icons.share, 'Share'),
             _buildMenuItem('export', Icons.file_download_outlined, 'Export'),
@@ -419,13 +423,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  PopupMenuItem<String> _buildMenuItem(
-      String value, IconData icon, String text) {
+  PopupMenuItem<String> _buildMenuItem(String value, IconData icon, String text) {
     return PopupMenuItem(
       value: value,
       child: Row(
         children: [
-          Icon(icon, size: 20),
+          Icon(icon, size: 20, color: Colors.black87),
           const SizedBox(width: 12),
           Text(text),
         ],
