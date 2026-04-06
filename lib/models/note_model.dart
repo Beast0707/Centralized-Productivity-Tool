@@ -2,11 +2,11 @@ class Note {
   int? id;
   String? title;
   String? content;
-  DateTime? createdat;
-  DateTime? updatedat;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
   // Constructor
-  Note({this.id, this.title, this.content, this.createdat, this.updatedat});
+  Note({this.id, this.title, this.content, this.createdAt, this.updatedAt});
 
   // Object → Map (for database insert)
   Map<String, dynamic> toMap() {
@@ -14,8 +14,8 @@ class Note {
       "id": id,
       "title": title,
       "content": content,
-      "createdat": createdat?.toIso8601String(),
-      "updatedat": updatedat?.toIso8601String(),
+      "created_at": createdAt?.toIso8601String(),
+      "updated_at": updatedAt?.toIso8601String(),
     };
   }
 
@@ -25,12 +25,18 @@ class Note {
       id: map["id"],
       title: map["title"],
       content: map["content"],
-      createdat: map["createdat"] != null
-          ? DateTime.parse(map["createdat"])
+      createdAt: map["created_at"] != null
+          ? DateTime.parse(map["created_at"])
           : null,
-      updatedat: map["updated_at"] != null
+      updatedAt: map["updated_at"] != null
           ? DateTime.parse(map["updated_at"])
           : null,
     );
+  }
+
+  // ✅ CORRECT PLACE
+  @override
+  String toString() {
+    return 'Note(id: $id, title: $title, content: $content)';
   }
 }

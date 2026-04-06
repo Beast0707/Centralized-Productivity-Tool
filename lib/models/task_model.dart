@@ -4,8 +4,8 @@ class Task {
   String? description;
   DateTime? date;
   int? isCompleted;
-  DateTime? createdat;
-  DateTime? updatedat;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
   // Constructor
   Task({
@@ -14,8 +14,8 @@ class Task {
     this.description,
     this.date,
     this.isCompleted,
-    this.createdat,
-    this.updatedat,
+    this.createdAt,
+    this.updatedAt,
   });
 
   // Object → Map (for DB insert)
@@ -25,9 +25,9 @@ class Task {
       "title": title,
       "description": description,
       "date": date?.toIso8601String(),
-      "iscompleted": isCompleted,
-      "createdat": createdat?.toIso8601String(),
-      "updatedat": updatedat?.toIso8601String(),
+      "is_completed": isCompleted ?? 0,
+      "created_at": createdAt?.toIso8601String(),
+      "updated_at": updatedAt?.toIso8601String(),
     };
   }
 
@@ -38,13 +38,17 @@ class Task {
       title: map["title"],
       description: map["description"],
       date: map["date"] != null ? DateTime.parse(map["date"]) : null,
-      isCompleted: map["iscompleted"],
-      createdat: map["createdat"] != null
-          ? DateTime.parse(map["createdat"])
+      isCompleted: map["is_completed"],
+      createdAt: map["created_at"] != null
+          ? DateTime.parse(map["created_at"])
           : null,
-      updatedat: map["updatedat"] != null
-          ? DateTime.parse(map["updatedat"])
+      updatedAt: map["updated_at"] != null
+          ? DateTime.parse(map["updated_at"])
           : null,
     );
+  }
+  @override
+  String toString() {
+    return 'Task(id: $id, title: $title, desc: $description, completed: $isCompleted, date: $date)';
   }
 }

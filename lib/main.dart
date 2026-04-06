@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
+import 'services/db_service.dart';
 
-void main() {
+
+Future<void> main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await DBService.instance.database;
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
