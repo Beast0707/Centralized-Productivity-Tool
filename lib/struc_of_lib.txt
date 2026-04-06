@@ -1,0 +1,34 @@
+Folder PATH listing for volume OS
+Volume serial number is C4C7-2B03
+C:.
+|   main.dart
+|   struc_of_lib.txt
+|   
++---core
+|       constants.dart
+|       utils.dart
+|       
++---models
+|       event_model.dart
+|       note_model.dart
+|       task_model.dart
+|       vault_model.dart
+|       
++---screens
+|       calendar_screen.dart
+|       editor_screen.dart
+|       home_screen.dart
+|       notes_screen.dart
+|       tasks_screen.dart
+|       vault_screen.dart
+|       
++---services
+|       db_service.dart
+|       vault_service.dart
+|       
+\---widgets
+        custom_button.dart
+        event_tile.dart
+        note_card.dart
+        task_tile.dart
+        

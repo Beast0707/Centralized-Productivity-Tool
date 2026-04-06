@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'home_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../services/db_service.dart';
 
 class CalendarScreen extends StatefulWidget {
   @override
@@ -14,6 +16,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); // ✅ better than push
+            },
+            child: Text('Back'),
+          )
+        ],
         title: Text("My Calendar"),
         backgroundColor: Colors.black,
       ),
@@ -23,22 +33,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
             focusedDay: today,
             firstDay: DateTime.utc(2000, 1, 1),
             lastDay: DateTime.utc(2100, 12, 31),
-
-            headerStyle: HeaderStyle(
-              formatButtonVisible: true,
-            ),
-
+            headerStyle: HeaderStyle(formatButtonVisible: false),
             selectedDayPredicate: (day) {
               return isSameDay(selectedDay, day);
             },
-
-            onDaySelected: (selected, focused) {
+            onDaySelected: (selected, focused) async {
               setState(() {
                 selectedDay = selected;
                 today = focused;
               });
-            },
 
+              final tasks =
+              await DBService.instance.getTasksByDate(selected);
+
+              print(tasks);
+            },
             calendarStyle: CalendarStyle(
               selectedDecoration: BoxDecoration(
                 color: Colors.black,
@@ -50,14 +59,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
           ),
-
           SizedBox(height: 20),
-
           Text(
             selectedDay == null
                 ? "No date selected"
                 : "Selected: ${selectedDay!.day}/${selectedDay!.month}/${selectedDay!.year}",
-            style: TextStyle(fontSize: 18),
           ),
         ],
       ),
