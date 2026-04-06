@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/sidebar.dart';
+import '../services/vault_service.dart';
 
 const Color _kVaultAccent = Color.fromARGB(255, 56, 56, 56);
 const Color _kBackgroundColor = Color(0xFFE5E5E5);
@@ -17,8 +18,24 @@ class _VaultScreenState extends State<VaultScreen> {
   final List<String> _enteredCode = [];
   final int _codeLength = 4;
   bool _hasError = false;
+  final VaultService _vaultService = VaultService();
 
-  final String _correctCode = '0000';
+  @override
+  void initState() {
+    super.initState();
+    _initVault();
+  }
+
+  void _initVault() async {
+    final existing = await _vaultService.getPasscode();
+
+    if (existing == null) {
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacementNamed(context, '/setPasscode');
+    });
+ }
+  }
+ // final String _correctCode = '0000';
 
   void _onKeyTap(String value) {
     if (_enteredCode.length >= _codeLength) return;
@@ -40,20 +57,28 @@ class _VaultScreenState extends State<VaultScreen> {
     });
   }
 
-  void _checkCode() {
-    final entered = _enteredCode.join();
-    if (entered == _correctCode) {
-      debugPrint('Correct passcode!');
-    } else {
-      setState(() => _hasError = true);
-      Future.delayed(const Duration(milliseconds: 600), () {
-        setState(() {
-          _enteredCode.clear();
-          _hasError = false;
-        });
+void _checkCode() async {
+  final entered = _enteredCode.join();
+
+  final isCorrect = await _vaultService.verifyPasscode(entered);
+
+  if (isCorrect) {
+    debugPrint('Correct passcode!');
+
+    // 👉 Navigate to vault home
+    Navigator.pushReplacementNamed(context, '/vaultHome');
+
+  } else {
+    setState(() => _hasError = true);
+
+    Future.delayed(const Duration(milliseconds: 600), () {
+      setState(() {
+        _enteredCode.clear();
+        _hasError = false;
       });
-    }
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
