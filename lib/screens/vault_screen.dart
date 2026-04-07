@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/sidebar.dart';
+import '../services/vault_service.dart';
 
 const Color _kVaultAccent = Color.fromARGB(255, 56, 56, 56);
 const Color _kBackgroundColor = Color(0xFFE5E5E5);
@@ -17,8 +18,24 @@ class _VaultScreenState extends State<VaultScreen> {
   final List<String> _enteredCode = [];
   final int _codeLength = 4;
   bool _hasError = false;
+  final VaultService _vaultService = VaultService();
 
-  final String _correctCode = '0000';
+  @override
+  void initState() {
+    super.initState();
+    _initVault();
+  }
+
+  void _initVault() async {
+    final existing = await _vaultService.getPasscode();
+
+    if (existing == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, '/setPasscode');
+      });
+    }
+  }
+  // final String _correctCode = '0000';
 
   void _onKeyTap(String value) {
     if (_enteredCode.length >= _codeLength) return;
@@ -40,12 +57,19 @@ class _VaultScreenState extends State<VaultScreen> {
     });
   }
 
-  void _checkCode() {
+  void _checkCode() async {
     final entered = _enteredCode.join();
-    if (entered == _correctCode) {
+
+    final isCorrect = await _vaultService.verifyPasscode(entered);
+
+    if (isCorrect) {
       debugPrint('Correct passcode!');
+
+      // 👉 Navigate to vault home
+      Navigator.pushReplacementNamed(context, '/vaultHome');
     } else {
       setState(() => _hasError = true);
+
       Future.delayed(const Duration(milliseconds: 600), () {
         setState(() {
           _enteredCode.clear();
@@ -69,7 +93,11 @@ class _VaultScreenState extends State<VaultScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.lock_outline, size: 48, color: _kVaultAccent),
+                  const Icon(
+                    Icons.lock_outline,
+                    size: 48,
+                    color: _kVaultAccent,
+                  ),
                   const SizedBox(height: 12),
                   const Text(
                     'Enter Passcode',
@@ -105,7 +133,11 @@ class _VaultScreenState extends State<VaultScreen> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.grid_view_rounded, size: 28, color: _kTextSub),
+            icon: const Icon(
+              Icons.grid_view_rounded,
+              size: 28,
+              color: _kTextSub,
+            ),
             onPressed: () => _scaffoldKey.currentState?.openDrawer(),
           ),
         ],
@@ -128,8 +160,8 @@ class _VaultScreenState extends State<VaultScreen> {
             color: _hasError
                 ? _kVaultAccent
                 : filled
-                    ? _kVaultAccent
-                    : Colors.transparent,
+                ? _kVaultAccent
+                : Colors.transparent,
             border: Border.all(
               color: _hasError ? _kVaultAccent : _kTextSub,
               width: 2,
@@ -158,14 +190,22 @@ class _VaultScreenState extends State<VaultScreen> {
               return _KeyButton(
                 showBorder: false,
                 onTap: _onDelete,
-                child: const Icon(Icons.backspace_outlined, color: _kTextSub, size: 22),
+                child: const Icon(
+                  Icons.backspace_outlined,
+                  color: _kTextSub,
+                  size: 22,
+                ),
               );
             }
             return _KeyButton(
               onTap: () => _onKeyTap(key),
               child: Text(
                 key,
-                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400, color: Colors.black87),
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black87,
+                ),
               ),
             );
           }).toList(),
@@ -180,7 +220,11 @@ class _KeyButton extends StatelessWidget {
   final Widget child;
   final bool showBorder;
 
-  const _KeyButton({required this.onTap, required this.child, this.showBorder = true});
+  const _KeyButton({
+    required this.onTap,
+    required this.child,
+    this.showBorder = true,
+  });
 
   @override
   Widget build(BuildContext context) {

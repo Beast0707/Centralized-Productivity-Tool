@@ -11,6 +11,8 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   DateTime today = DateTime.now();
   DateTime? selectedDay;
+  List<Map<String, dynamic>> _tasks = [];
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context); // ✅ better than push
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
             },
             child: Text('Back'),
           )
@@ -41,12 +46,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
               setState(() {
                 selectedDay = selected;
                 today = focused;
+                _isLoading = true;
               });
-
-              final tasks =
-              await DBService.instance.getTasksByDate(selected);
-
-              print(tasks);
+              final tasks = await DBService.instance.getTasksByDate(selected);
+              setState(() {
+                _tasks = List<Map<String, dynamic>>.from(tasks);
+                _isLoading = false;
+              });
             },
             calendarStyle: CalendarStyle(
               selectedDecoration: BoxDecoration(
@@ -59,11 +65,143 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
           ),
+
           SizedBox(height: 20),
-          Text(
-            selectedDay == null
-                ? "No date selected"
-                : "Selected: ${selectedDay!.day}/${selectedDay!.month}/${selectedDay!.year}",
+
+          // ── Events Section ──────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  selectedDay == null
+                      ? "No date selected"
+                      : "${selectedDay!.day}/${selectedDay!.month}/${selectedDay!.year}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                if (selectedDay != null)
+                  Text(
+                    "${_tasks.length} event${_tasks.length == 1 ? '' : 's'}",
+                    style: TextStyle(color: Colors.grey, fontSize: 13),
+                  ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 10),
+
+          Expanded(
+            child: selectedDay == null
+                // ── Placeholder when no date is picked ──
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.calendar_today,
+                            size: 48, color: Colors.grey.shade300),
+                        SizedBox(height: 12),
+                        Text(
+                          "Select a date to view events",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  )
+                : _isLoading
+                    // ── Loading spinner ──
+                    ? Center(child: CircularProgressIndicator(color: Colors.black))
+                    : _tasks.isEmpty
+                        // ── Empty state ──
+                        ? Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.event_busy,
+                                    size: 48, color: Colors.grey.shade300),
+                                SizedBox(height: 12),
+                                Text(
+                                  "No events for this day",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          )
+                        // ── Events list ──
+                        : ListView.separated(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: _tasks.length,
+                            separatorBuilder: (_, __) => SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final task = _tasks[index];
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  leading: Container(
+                                    width: 4,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                  title: Text(
+                                    task['title'] ?? 'Untitled',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  subtitle: task['description'] != null &&
+                                          task['description'].toString().isNotEmpty
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(top: 4),
+                                          child: Text(
+                                            task['description'],
+                                            style: TextStyle(
+                                                color: Colors.grey.shade600,
+                                                fontSize: 13),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        )
+                                      : null,
+                                  trailing: task['time'] != null
+                                      ? Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.access_time,
+                                                size: 14, color: Colors.grey),
+                                            SizedBox(height: 2),
+                                            Text(
+                                              task['time'],
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey),
+                                            ),
+                                          ],
+                                        )
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
           ),
         ],
       ),
