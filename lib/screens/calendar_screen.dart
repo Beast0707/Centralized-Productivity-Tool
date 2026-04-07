@@ -14,16 +14,16 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   DateTime today = DateTime.now();
   DateTime? selectedDay;
-
-  bool _isLoading = false;
   List<Map<String, dynamic>> _tasks = [];
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My Calendar"),
+        title: Text("My Calendar"),
         iconTheme: const IconThemeData(color: Colors.white),
+
         automaticallyImplyLeading: false,
         leading: Builder(
           builder: (context) => IconButton(
@@ -33,14 +33,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
             },
           ),
         ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Back'),
-          )
-        ],
       ),
 
       drawer: AppSidebar(currentRoute: '/calendar'),
@@ -51,7 +43,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             focusedDay: today,
             firstDay: DateTime.utc(2000, 1, 1),
             lastDay: DateTime.utc(2100, 12, 31),
-            headerStyle: const HeaderStyle(formatButtonVisible: false),
+            headerStyle: HeaderStyle(formatButtonVisible: false),
             selectedDayPredicate: (day) => isSameDay(selectedDay, day),
             onDaySelected: (selected, focused) async {
               setState(() {
@@ -59,15 +51,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 today = focused;
                 _isLoading = true;
               });
-
-              final tasks = await DBService.instance.getTasksByDate(selected);
-
-              setState(() {
-                _tasks = tasks;
-                _isLoading = false;
-              });
             },
-            calendarStyle: const CalendarStyle(
+            calendarStyle: CalendarStyle(
               selectedDecoration: BoxDecoration(
                 color: Colors.black,
                 shape: BoxShape.circle,
@@ -117,16 +102,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
           children: [
             Icon(Icons.calendar_today, size: 48, color: Colors.grey.shade300),
             const SizedBox(height: 12),
-            const Text("Select a date to view events",
-                style: TextStyle(color: Colors.grey)),
+            const Text("Select a date to view events", style: TextStyle(color: Colors.grey)),
           ],
         ),
       );
     }
 
     if (_isLoading) {
-      return const Center(
-          child: CircularProgressIndicator(color: Colors.black));
+      return const Center(child: CircularProgressIndicator(color: Colors.black));
     }
 
     if (_tasks.isEmpty) {
@@ -136,8 +119,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           children: [
             Icon(Icons.event_busy, size: 48, color: Colors.grey.shade300),
             const SizedBox(height: 12),
-            const Text("No events for this day",
-                style: TextStyle(color: Colors.grey)),
+            const Text("No events for this day", style: TextStyle(color: Colors.grey)),
           ],
         ),
       );
@@ -161,8 +143,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ],
       ),
       child: ListTile(
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           width: 4,
           height: 40,
@@ -173,17 +154,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
         title: Text(
           task['title'] ?? 'Untitled',
-          style:
-          const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
         ),
-        subtitle: task['description'] != null &&
-            task['description'].toString().isNotEmpty
+        subtitle: task['description'] != null && task['description'].toString().isNotEmpty
             ? Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             task['description'],
-            style: TextStyle(
-                color: Colors.grey.shade600, fontSize: 13),
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -193,13 +171,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.access_time,
-                size: 14, color: Colors.grey),
+            const Icon(Icons.access_time, size: 14, color: Colors.grey),
             const SizedBox(height: 2),
             Text(
               task['time'],
-              style: const TextStyle(
-                  fontSize: 12, color: Colors.grey),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         )
