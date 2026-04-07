@@ -2,40 +2,51 @@ import 'package:flutter/material.dart';
 import '../screens/calendar_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/vault_screen.dart';
+import '../screens/tasks_screen.dart';
 
 class AppSidebar extends StatelessWidget {
   final String currentRoute;
-
   const AppSidebar({super.key, required this.currentRoute});
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          _SidebarItem(
-            icon: Icons.home,
-            label: 'Home',
-            route: '/home',
-            currentRoute: currentRoute,
-            destination: HomeScreen(),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: ListView(
+            children: [
+              _SidebarItem(
+                icon: Icons.home,
+                label: 'Home',
+                route: '/home',
+                currentRoute: currentRoute,
+                destination: HomeScreen(),
+              ),
+              _SidebarItem(
+                icon: Icons.calendar_today,
+                label: 'Calendar',
+                route: '/calendar',
+                currentRoute: currentRoute,
+                destination: CalendarScreen(),
+              ),
+              _SidebarItem(
+                icon: Icons.lock,
+                label: 'Vault',
+                route: '/vault',
+                currentRoute: currentRoute,
+                destination: VaultScreen(),
+              ),
+              _SidebarItem(
+                icon: Icons.task,
+                label: 'Task',
+                route: '/task',
+                currentRoute: currentRoute,
+                destination: TasksScreen(),
+              ),
+            ],
           ),
-          _SidebarItem(
-            icon: Icons.calendar_today,
-            label: 'Calendar',
-            route: '/calendar',
-            currentRoute: currentRoute,
-            destination: CalendarScreen(),
-          ),
-          _SidebarItem(
-            icon: Icons.lock,
-            label: 'Vault',
-            route: '/vault',
-            currentRoute: currentRoute,
-            destination: VaultScreen(),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -59,12 +70,12 @@ class _SidebarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isActive = currentRoute == route;
-
     return ListTile(
+      leading: Icon(icon),
       title: Text(label),
       selected: isActive,
       onTap: () {
-        Navigator.pop(context); // close drawer
+        Navigator.pop(context);
         if (!isActive) {
           Navigator.pushReplacement(
             context,

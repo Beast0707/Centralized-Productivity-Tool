@@ -21,6 +21,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
       ),
       home: const HomeScreen(),
+      routes: {
+        '/vaultHome': (context) => Scaffold(
+          body: Center(child: Text("Vault Unlocked 🔓")),
+        ),
+      },
     );
   }
 }
