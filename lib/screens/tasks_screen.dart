@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/sidebar.dart';
 
-const Color _kBackgroundColor = Color(0xFFE5E5E5);
 const Color _kTextSub = Color(0xFF666666);
 
 class TasksScreen extends StatefulWidget {
@@ -10,7 +9,6 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStateMixin {
-  // ✅ Moved here from TasksScreen
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -30,18 +28,6 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
 
   List<Map<String, dynamic>> get _completedTasks =>
       _tasks.where((t) => t['done']).toList();
-
-  // ✅ Moved inside the State class
-  Widget _buildTopBar(BuildContext context) {
-    return Row(
-      children: [
-        IconButton(
-          icon: const Icon(Icons.grid_view_rounded, size: 28, color: _kTextSub),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-        ),
-      ],
-    );
-  }
 
   Color _priorityColor(String priority) {
     switch (priority) {
@@ -91,159 +77,6 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
     setState(() {
       _tasks.remove(task);
     });
-  }
-
-  void _showAddTaskSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color.fromARGB(0, 0, 0, 0),
-      builder: (_) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
-            padding: EdgeInsets.only(
-              top: 24,
-              left: 20,
-              right: 20,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text("New Task", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                SizedBox(height: 16),
-                TextField(
-                  controller: _taskController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    hintText: 'Task title',
-                    prefixIcon: Icon(Icons.edit_outlined),
-                    filled: true,
-                    fillColor: Colors.grey.shade100,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 12),
-                TextField(
-                  controller: _descController,
-                  maxLines: 2,
-                  decoration: InputDecoration(
-                    hintText: 'Description (optional)',
-                    prefixIcon: Icon(Icons.notes_outlined),
-                    filled: true,
-                    fillColor: Colors.grey.shade100,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                Text("Priority", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                SizedBox(height: 8),
-                Row(
-                  children: _priorities.map((p) {
-                    final selected = _selectedPriority == p;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: GestureDetector(
-                        onTap: () => setModalState(() => _selectedPriority = p),
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 200),
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: selected ? _priorityColor(p) : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(p,
-                            style: TextStyle(
-                              color: selected ? Colors.white : Colors.black54,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 16),
-                Text("Category", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                SizedBox(height: 8),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: _categories.map((cat) {
-                      final selected = _selectedCategory == cat;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: GestureDetector(
-                          onTap: () => setModalState(() => _selectedCategory = cat),
-                          child: AnimatedContainer(
-                            duration: Duration(milliseconds: 200),
-                            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: selected ? Colors.black : Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(_categoryIcon(cat), size: 14, color: selected ? Colors.white : Colors.black54),
-                                SizedBox(width: 4),
-                                Text(cat,
-                                  style: TextStyle(
-                                    color: selected ? Colors.white : Colors.black54,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _addTask,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: Text("Add Task",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
   }
 
   Widget _buildTaskCard(Map<String, dynamic> task, int index, List<Map<String, dynamic>> list) {
@@ -311,7 +144,7 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(task['priority'],
-                      style: TextStyle(color: _priorityColor(task['priority']), fontSize: 11, fontWeight: FontWeight.bold)),
+                        style: TextStyle(color: _priorityColor(task['priority']), fontSize: 11, fontWeight: FontWeight.bold)),
                   ),
                   SizedBox(width: 8),
                   Row(
@@ -355,7 +188,7 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
     _tabController.dispose();
     _taskController.dispose();
     _descController.dispose();
-    _searchController.dispose(); // ✅ also dispose this
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -364,15 +197,19 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey.shade100,
-      drawer: const AppSidebar(currentRoute: '/home'),
+      drawer: AppSidebar(currentRoute: '/task'),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 78, 78, 78),
-        title: Text("Tasks", style: TextStyle(color: Colors.white)),
         elevation: 0,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.grid_view_rounded, size: 28, color: _kTextSub),
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        ),
+        title: Text("Tasks", style: TextStyle(color: _kTextSub)),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
+          indicatorColor: Colors.black,
+          labelColor: _kTextSub,
           unselectedLabelColor: Colors.grey.shade400,
           tabs: [
             Tab(text: "Pending (${_pendingTasks.length})"),
@@ -386,21 +223,23 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
           _pendingTasks.isEmpty
               ? _buildEmptyState("No pending tasks.\nTap + to add one!", Icons.checklist)
               : ListView.builder(
-                  padding: EdgeInsets.all(16),
-                  itemCount: _pendingTasks.length,
-                  itemBuilder: (_, i) => _buildTaskCard(_pendingTasks[i], i, _pendingTasks),
-                ),
+            padding: EdgeInsets.all(16),
+            itemCount: _pendingTasks.length,
+            itemBuilder: (_, i) => _buildTaskCard(_pendingTasks[i], i, _pendingTasks),
+          ),
           _completedTasks.isEmpty
               ? _buildEmptyState("Nothing completed yet.", Icons.task_alt)
               : ListView.builder(
-                  padding: EdgeInsets.all(16),
-                  itemCount: _completedTasks.length,
-                  itemBuilder: (_, i) => _buildTaskCard(_completedTasks[i], i, _completedTasks),
-                ),
+            padding: EdgeInsets.all(16),
+            itemCount: _completedTasks.length,
+            itemBuilder: (_, i) => _buildTaskCard(_completedTasks[i], i, _completedTasks),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddTaskSheet,
+        onPressed: () {
+          // Do nothing on button press to disable UI
+        },
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         icon: Icon(Icons.add, color: Colors.white),
         label: Text("New Task", style: TextStyle(color: Colors.white)),

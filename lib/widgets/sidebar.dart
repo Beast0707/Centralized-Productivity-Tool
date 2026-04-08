@@ -1,4 +1,3 @@
-import 'package:capstone_project/screens/tasks_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/calendar_screen.dart';
 import '../screens/home_screen.dart';
@@ -14,7 +13,7 @@ class AppSidebar extends StatelessWidget {
     return Drawer(
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 100), // ✅ top padding here
+          padding: const EdgeInsets.only(top: 10),
           child: ListView(
             children: [
               _SidebarItem(
@@ -39,7 +38,7 @@ class AppSidebar extends StatelessWidget {
                 destination: VaultScreen(),
               ),
               _SidebarItem(
-                icon: Icons.lock,
+                icon: Icons.task,
                 label: 'Task',
                 route: '/task',
                 currentRoute: currentRoute,
@@ -72,7 +71,7 @@ class _SidebarItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isActive = currentRoute == route;
     return ListTile(
-      leading: Icon(icon), // ✅ you had icon defined but never used it
+      leading: Icon(icon),
       title: Text(label),
       selected: isActive,
       onTap: () {

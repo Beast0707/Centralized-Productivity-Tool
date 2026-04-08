@@ -1,8 +1,9 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class VaultService {
-  final _storage = const FlutterSecureStorage();
-  static const _key = 'vault_passcode';
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  static const String _key = 'vault_passcode';
 
   Future<void> setPasscode(String code) async {
     await _storage.write(key: _key, value: code);

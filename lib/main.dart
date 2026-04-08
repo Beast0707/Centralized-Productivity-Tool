@@ -14,13 +14,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner:false,
+      debugShowCheckedModeBanner: false, // Cleaner UI
       title: 'Note App',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
       ),
       home: const HomeScreen(),
+      routes: {
+        '/vaultHome': (context) => Scaffold(
+          body: Center(child: Text("Vault Unlocked 🔓")),
+        ),
+      },
     );
   }
 }
