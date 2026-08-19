@@ -1,5 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+//Store a user’s passcode securely
+//Retrieve it later
+//Check if a user passcode is correct
 class VaultService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 

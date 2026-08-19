@@ -3,9 +3,11 @@ import 'screens/home_screen.dart';
 import 'services/db_service.dart';
 
 
-Future<void> main() async{
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await DBService.instance.database;
+
+  DBService.instance;
+
   runApp(const MyApp());
 }
 

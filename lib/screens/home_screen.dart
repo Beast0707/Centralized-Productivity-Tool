@@ -21,7 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // ====== TASK FUNCTIONS ======
+  //These Test cases of for UI & DB interaction
+  //---- REMOVE THIS LATER ----
   Future<void> insertTestTask() async {
     Task task = Task(
       title: "test task2",
@@ -172,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  //Sidebar, Recent notes title, Building test buttons
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,73 +204,75 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 16),
 
-                // ===== TEMP CALENDAR BUTTON =====
-                _buildTestButton(
-                  label: "TEMP: Go to Calendar",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CalendarScreen()),
-                    );
-                  },
-                ),
+                // ===== TEST DROPDOWN =====
+                ExpansionTile(
+                  title: const Text("Test Actions"),
+                  children: [
+                    _buildTestButton(
+                      label: "TEMP: Go to Calendar",
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CalendarScreen()),
+                        );
+                      },
+                    ),
 
-                // ===== TASK TEST BUTTONS =====
-                _buildTestButton(
-                  label: "TEMP: Insert Task",
-                  onPressed: insertTestTask,
-                ),
-                _buildTestButton(
-                  label: "TEST: Get Tasks By Date",
-                  onPressed: testGetTasksByDate,
-                ),
-                _buildTestButton(
-                  label: "TEST: Toggle Task",
-                  onPressed: testToggleTask,
-                ),
-                _buildTestButton(
-                  label: "TEST: Update Task",
-                  onPressed: testUpdateTask,
-                ),
-                _buildTestButton(
-                  label: "TEST: Delete Task",
-                  onPressed: testDeleteTask,
-                ),
+                    _buildTestButton(
+                      label: "TEMP: Insert Task",
+                      onPressed: insertTestTask,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Get Tasks By Date",
+                      onPressed: testGetTasksByDate,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Toggle Task",
+                      onPressed: testToggleTask,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Update Task",
+                      onPressed: testUpdateTask,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Delete Task",
+                      onPressed: testDeleteTask,
+                    ),
 
-                // ===== NOTES TEST BUTTONS =====
-                _buildTestButton(
-                  label: "TEST: Insert Note",
-                  onPressed: testInsertNote,
-                ),
-                _buildTestButton(
-                  label: "TEST: Get Notes",
-                  onPressed: testGetNotes,
-                ),
-                _buildTestButton(
-                  label: "TEST: Update Note",
-                  onPressed: testUpdateNote,
-                ),
-                _buildTestButton(
-                  label: "TEST: Delete Note",
-                  onPressed: testDeleteNote,
-                ),
+                    _buildTestButton(
+                      label: "TEST: Insert Note",
+                      onPressed: testInsertNote,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Get Notes",
+                      onPressed: testGetNotes,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Update Note",
+                      onPressed: testUpdateNote,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Delete Note",
+                      onPressed: testDeleteNote,
+                    ),
 
-                // ===== EVENTS TEST BUTTONS =====
-                _buildTestButton(
-                  label: "TEST: Insert Event",
-                  onPressed: testInsertEvent,
-                ),
-                _buildTestButton(
-                  label: "TEST: Get Events",
-                  onPressed: testGetEvents,
-                ),
-                _buildTestButton(
-                  label: "TEST: Update Event",
-                  onPressed: testUpdateEvent,
-                ),
-                _buildTestButton(
-                  label: "TEST: Delete Event",
-                  onPressed: testDeleteEvent,
+                    _buildTestButton(
+                      label: "TEST: Insert Event",
+                      onPressed: testInsertEvent,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Get Events",
+                      onPressed: testGetEvents,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Update Event",
+                      onPressed: testUpdateEvent,
+                    ),
+                    _buildTestButton(
+                      label: "TEST: Delete Event",
+                      onPressed: testDeleteEvent,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -288,6 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //Topbar
   Widget _buildTopBar(BuildContext context) {
     return Row(
       children: [

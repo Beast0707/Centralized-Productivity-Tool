@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/sidebar.dart';
 import '../services/vault_service.dart';
-import '../services/vault_service.dart';
 
 const Color _kVaultAccent = Color.fromARGB(255, 56, 56, 56);
 const Color _kBackgroundColor = Color(0xFFE5E5E5);
@@ -16,17 +15,23 @@ class VaultScreen extends StatefulWidget {
 
 class _VaultScreenState extends State<VaultScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // Stores the digits entered by the user
   final List<String> _enteredCode = [];
+
+  // Required length of passcode
   final int _codeLength = 4;
 
-  bool _hasError = false;
-  bool _isFirstTime = false;
-  bool _isConfirming = false;
-  bool _isLoading = true;
+  bool _hasError = false;      // Indicates incorrect passcode
+  bool _isFirstTime = false;   // True if no passcode is set yet
+  bool _isConfirming = false;  // True when confirming passcode
+  bool _isLoading = true;      // Loading state during initialization
 
+  // Temporarily stores first passcode entry during setup
   List<String> _firstEntry = [];
 
-  final VaultService _vaultService = VaultService();
+  // Service handling vault operations
+  final VaultService _vaultService = VaultService(); 
 
   @override
   void initState() {
@@ -34,6 +39,7 @@ class _VaultScreenState extends State<VaultScreen> {
     _initVault();
   }
 
+  // Initialize vault by checking if passcode already exists
   void _initVault() async {
     final existing = await _vaultService.getPasscode();
 
@@ -43,6 +49,7 @@ class _VaultScreenState extends State<VaultScreen> {
     });
   }
 
+  // Handles keypad input
   void _onKeyTap(String value) {
     if (_enteredCode.length >= _codeLength) return;
 
@@ -51,6 +58,7 @@ class _VaultScreenState extends State<VaultScreen> {
       _enteredCode.add(value);
     });
 
+    // When required digits entered, process accordingly
     if (_enteredCode.length == _codeLength) {
       if (_isFirstTime) {
         _handleSetPasscode();
@@ -60,9 +68,11 @@ class _VaultScreenState extends State<VaultScreen> {
     }
   }
 
+  // Handles passcode creation and confirmation
   void _handleSetPasscode() async {
     final entered = _enteredCode.join();
 
+    // First entry of passcode
     if (!_isConfirming) {
       _firstEntry = List.from(_enteredCode);
 
@@ -71,25 +81,29 @@ class _VaultScreenState extends State<VaultScreen> {
         _isConfirming = true;
       });
     } else {
+      // Confirm passcode matches first entry
       if (entered == _firstEntry.join()) {
         await _vaultService.setPasscode(entered);
 
         _enteredCode.clear();
 
+        // Navigate to unlocked screen
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => Scaffold(
               appBar: AppBar(title: const Text("Vault")),
-              body: const Center(child: Text("Vault Unlocked 🔓")),
+              body: const Center(child: Text("Vault Unlocked ")),
             ),
           ),
         );
       } else {
+        // Passcodes do not match
         setState(() {
           _hasError = true;
         });
 
+        // Reset after short delay
         Future.delayed(const Duration(milliseconds: 600), () {
           setState(() {
             _enteredCode.clear();
@@ -102,6 +116,7 @@ class _VaultScreenState extends State<VaultScreen> {
     }
   }
 
+  // Deletes last entered digit
   void _onDelete() {
     if (_enteredCode.isEmpty) return;
 
@@ -111,6 +126,7 @@ class _VaultScreenState extends State<VaultScreen> {
     });
   }
 
+  // Verifies entered passcode
   void _checkCode() async {
     final entered = _enteredCode.join();
 
@@ -119,6 +135,7 @@ class _VaultScreenState extends State<VaultScreen> {
     if (isCorrect) {
       _enteredCode.clear();
 
+      // Navigate to unlocked screen
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -129,8 +146,10 @@ class _VaultScreenState extends State<VaultScreen> {
         ),
       );
     } else {
+      // Incorrect passcode
       setState(() => _hasError = true);
 
+      // Reset input after delay
       Future.delayed(const Duration(milliseconds: 600), () {
         setState(() {
           _enteredCode.clear();
@@ -142,6 +161,7 @@ class _VaultScreenState extends State<VaultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Show loader while initializing
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -156,6 +176,8 @@ class _VaultScreenState extends State<VaultScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
+
+        // Drawer button
         leading: IconButton(
           icon: const Icon(Icons.grid_view_rounded, size: 28, color: _kTextSub),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
@@ -170,6 +192,7 @@ class _VaultScreenState extends State<VaultScreen> {
             const Icon(Icons.lock_outline, size: 48, color: _kVaultAccent),
             const SizedBox(height: 12),
 
+            // Instruction text
             Text(
               _isFirstTime
                   ? (_isConfirming ? 'Confirm Passcode' : 'Set Passcode')
@@ -182,6 +205,8 @@ class _VaultScreenState extends State<VaultScreen> {
             ),
 
             const SizedBox(height: 32),
+
+            // Passcode dots
             _buildDots(),
 
             if (_hasError) ...[
@@ -195,6 +220,7 @@ class _VaultScreenState extends State<VaultScreen> {
             ],
 
             const SizedBox(height: 48),
+
             _buildKeypad(),
           ],
         ),
@@ -202,6 +228,7 @@ class _VaultScreenState extends State<VaultScreen> {
     );
   }
 
+  // Builds passcode indicator dots
   Widget _buildDots() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -218,8 +245,8 @@ class _VaultScreenState extends State<VaultScreen> {
             color: _hasError
                 ? _kVaultAccent
                 : filled
-                ? _kVaultAccent
-                : Colors.transparent,
+                    ? _kVaultAccent
+                    : Colors.transparent,
             border: Border.all(
               color: _hasError ? _kVaultAccent : _kTextSub,
               width: 2,
@@ -245,6 +272,7 @@ class _VaultScreenState extends State<VaultScreen> {
           children: row.map((key) {
             if (key.isEmpty) return const SizedBox(width: 90, height: 70);
 
+            // Delete button
             if (key == 'del') {
               return _KeyButton(
                 showBorder: false,
@@ -253,6 +281,7 @@ class _VaultScreenState extends State<VaultScreen> {
               );
             }
 
+            // Number button
             return _KeyButton(
               onTap: () => _onKeyTap(key),
               child: Text(
@@ -267,6 +296,7 @@ class _VaultScreenState extends State<VaultScreen> {
   }
 }
 
+// Reusable keypad button widget
 class _KeyButton extends StatelessWidget {
   final VoidCallback onTap;
   final Widget child;
@@ -292,12 +322,12 @@ class _KeyButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: showBorder
               ? BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: _kTextSub.withOpacity(0.4),
-              width: 1.5,
-            ),
-          )
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: _kTextSub.withOpacity(0.4),
+                    width: 1.5,
+                  ),
+                )
               : null,
           child: child,
         ),
