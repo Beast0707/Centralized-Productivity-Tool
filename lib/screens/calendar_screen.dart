@@ -35,7 +35,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ),
 
-      drawer: AppSidebar(currentRoute: '/calendar'),
+        drawer: const AppSidebar(),
 
       body: Column(
         children: [
